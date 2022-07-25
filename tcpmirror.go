@@ -26,6 +26,13 @@ var (
 	debugPtr = flag.Bool("d", false, "Print debug information on stdout")
 )
 
+func getEnvOrDefault(key, defaultValue string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return defaultValue
+}
+
 func main() {
 
 	flag.Usage = Usage
@@ -33,6 +40,7 @@ func main() {
 
 	mirrorAddrs := strings.Split(*mirrorPtr, ",")
 
+	fmt.Println("Hello TCP Mirror")
 	fmt.Printf("Listening on                    %s\n", *listenPtr)
 	fmt.Printf("Connecting in primary mode to   %s\n", *primaryPtr)
 	fmt.Printf("Duplicating incoming traffic to %s\n", *mirrorPtr)
@@ -50,7 +58,7 @@ func main() {
 		p, err := net.Dial("tcp", *primaryPtr)
 		if err != nil {
 			fmt.Println("Error connecting to primary: ", err.Error())
-			os.Exit(1)
+			continue
 		}
 
 		// create array of writers where writers are
@@ -63,7 +71,7 @@ func main() {
 			m, err := net.Dial("tcp", mirrorAddr)
 			if err != nil {
 				fmt.Println("Error connecting to the mirror address: ", err.Error())
-				os.Exit(1)
+				continue
 			}
 			ws[i] = m
 		}
