@@ -63,8 +63,8 @@ func main() {
 			continue
 		}
 
+		ws := make([]io.Writer, len(mirrorAddrs))
 		if len(mirrorAddrs) > 0 {
-			ws := make([]io.Writer, len(mirrorAddrs))
 
 			for i, mirrorAddr := range mirrorAddrs {
 				m, err := net.Dial("tcp", mirrorAddr)
@@ -75,11 +75,11 @@ func main() {
 				}
 				ws[i] = m
 			}
-			ws = append(ws, p) // add primary
 
-			mw := io.MultiWriter(ws...)
-			go io.Copy(mw, in)
 		}
+		ws = append(ws, p) // add primary
+		mw := io.MultiWriter(ws...)
+		go io.Copy(mw, in)
 
 		go io.Copy(in, p)
 
