@@ -7,9 +7,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -installsuffix cgo -o ./build
 
 FROM scratch
 WORKDIR /app
-ARG l
-ARG p
-ARG m
+EXPOSE 8080
 COPY --from=gobuild /app/build/agent ./
 
 CMD [ "/app/agent" ]
